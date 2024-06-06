@@ -3,6 +3,11 @@ FROM python:3.10 as requirements-stage
 
 WORKDIR /tmp
 
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN pip install --upgrade pip
+
 RUN pip install poetry
 
 COPY ./pyproject.toml ./poetry.lock* /tmp/
@@ -15,6 +20,9 @@ FROM python:3.10
 WORKDIR /code
 
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
